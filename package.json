@@ -1,0 +1,16 @@
+{
+  "name": "ackneal-terminal-resume",
+  "version": "2.0.0",
+  "devDependencies": {
+    "@types/bun": "^1.4.0",
+    "@types/dom-chromium-ai": "^0.0.17",
+    "typescript": "^5.5.4"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "bun --port 3000 ./index.html",
+    "build": "bun scripts/build.ts",
+    "preview": "bun --port 4173 ./dist/index.html"
+  },
+  "type": "module"
+}
