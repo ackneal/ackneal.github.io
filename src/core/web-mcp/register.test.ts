@@ -31,6 +31,27 @@ describe('WebMCP career tools', () => {
     expect(careerTools.map(({ name }) => name)).toEqual(toolNames);
   });
 
+  test.each(careerTools)('$name provides concise discovery metadata', (definition) => {
+    expect(definition.name.length).toBeLessThanOrEqual(30);
+    expect(definition.title.length).toBeGreaterThan(0);
+    expect(definition.description).toContain('Use ');
+    expect(definition.description.length).toBeLessThanOrEqual(500);
+
+    const properties = definition.inputSchema.properties as Record<string, { description: string }>;
+    for (const [name, parameter] of Object.entries(properties)) {
+      expect(name.length).toBeLessThanOrEqual(30);
+      expect(parameter.description.length).toBeGreaterThan(0);
+      expect(parameter.description.length).toBeLessThanOrEqual(150);
+    }
+  });
+
+  test.each(careerTools)('$name is read-only and returns trusted canonical content', (definition) => {
+    expect(definition.annotations).toEqual({
+      readOnlyHint: true,
+      untrustedContentHint: false,
+    });
+  });
+
   test('uses closed schemas with controlled identifier enums', () => {
     const experienceIds = careerExperiences.map(({ id }) => id);
     const projectIds = careerExperiences.flatMap(({ projects }) =>

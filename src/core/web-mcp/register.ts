@@ -18,6 +18,10 @@ interface WebMcpTool {
   title: string;
   description: string;
   inputSchema: Record<string, unknown>;
+  annotations: {
+    readOnlyHint: boolean;
+    untrustedContentHint: boolean;
+  };
   execute(input: Record<string, unknown>): Promise<WebMcpResult>;
 }
 
@@ -38,42 +42,42 @@ export const careerTools: WebMcpTool[] = [
   createTool(
     'get_profile',
     'Get profile',
-    "Get Neal's concise professional profile, current role, and public links.",
+    "Get Neal's concise professional profile, current role, and public links. Use for introductions and initial orientation. Career stages and projects provide supporting evidence for deeper assessment.",
     noInputSchema,
     () => getProfile()
   ),
   createTool(
     'get_career_timeline',
     'Get career timeline',
-    'Get a lightweight chronological career overview. Use an experience ID from this result with get_experience.',
+    "Get Neal's career progression, newest first, and stable experience IDs. Use to understand role transitions or select experiences for deeper inspection.",
     noInputSchema,
     () => getCareerTimeline()
   ),
   createTool(
     'get_experience',
     'Get experience',
-    'Inspect one career stage and its lightweight project index. Use get_project for full project evidence.',
+    'Inspect one career stage, its summary, technologies, and lightweight project index. Use an experience ID from get_career_timeline to explore a role. Individual projects provide detailed technical evidence through get_project.',
     idSchema('experienceId', 'Stable experience ID from get_career_timeline.', experienceIds),
     (input) => getExperience(readString(input, 'experienceId'))
   ),
   createTool(
     'get_project',
-    'Get project',
-    'Get detailed canonical architecture, impact, engineering quality, and technologies for one project.',
+    'Get project evidence',
+    "Get detailed canonical evidence for one project, including architecture, technologies, and engineering quality or impact where documented. Use to support claims about Neal's technical depth, judgment, ownership, or role fit.",
     idSchema('projectId', 'Stable project ID from an experience project index.', projectIds),
     (input) => getProject(readString(input, 'projectId'))
   ),
   createTool(
     'get_evidence_by_topic',
     'Get evidence by topic',
-    'Get concise experience and project evidence for one predefined professional topic. This is deterministic lookup, not free-text search.',
+    'Find concise, canonical experience and project evidence for one predefined topic. Use for competency assessment, job-fit analysis, or targeted technical questions. This is deterministic lookup, not free-text search.',
     idSchema('topic', 'Predefined professional competency or technology topic.', evidenceTopics),
     (input) => getEvidenceByTopic(readTopic(input))
   ),
   createTool(
     'get_education',
     'Get education',
-    "Get Neal's canonical education records.",
+    "Get Neal's canonical education records. Use for questions about academic background, degree, or study period.",
     noInputSchema,
     () => getEducation()
   ),
@@ -102,6 +106,10 @@ function createTool(
     title,
     description,
     inputSchema,
+    annotations: {
+      readOnlyHint: true,
+      untrustedContentHint: false,
+    },
     async execute(input) {
       return {
         content: [{ type: 'text', text: JSON.stringify(project(input)) }],
