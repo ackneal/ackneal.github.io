@@ -3,6 +3,7 @@ import {
   education,
   type CareerStage,
   type Education,
+  type ProjectExperience,
 } from '../../content/resume.js';
 import { siteContent, type SiteContent } from '../../content/site-content.js';
 
@@ -139,7 +140,12 @@ export function getExperience(
     company: experience.company,
     summary: experience.summary,
     technologies: experience.technologies,
-    projects: experience.projects.map(({ id, name, summary }) => ({ id, name, summary })),
+    projects: experience.projects.map((project) => ({
+      id: project.id,
+      name: project.name,
+      summary: project.summary,
+      evidenceAvailable: getAvailableEvidence(project),
+    })),
   };
 }
 
@@ -204,6 +210,16 @@ export function getEvidenceByTopic(
 
 export function getEducation(records: Education[] = education) {
   return records;
+}
+
+function getAvailableEvidence(project: ProjectExperience) {
+  const evidence: string[] = [];
+
+  if (project.architecture.length > 0) evidence.push('architecture');
+  if (project.engineeringQuality?.length) evidence.push('engineeringQuality');
+  if (project.impact?.length) evidence.push('impact');
+
+  return evidence;
 }
 
 function findExperience(experienceId: string, experiences: CareerStage[]) {
