@@ -45,7 +45,7 @@ describe('WebMCP career tools', () => {
     }
   });
 
-  test.each(careerTools)('$name is read-only and returns trusted canonical content', (definition) => {
+  test.each(careerTools)('$name declares read-only and trusted-content hints', (definition) => {
     expect(definition.annotations).toEqual({
       readOnlyHint: true,
       untrustedContentHint: false,
@@ -112,22 +112,41 @@ describe('WebMCP career tools', () => {
     }
   });
 
-  test('rejects missing, empty, and unknown controlled inputs', async () => {
-    await expect(tool('get_experience').execute({})).rejects.toThrow(
-      'experienceId must be a non-empty string'
-    );
-    await expect(tool('get_project').execute({ projectId: '' })).rejects.toThrow(
-      'projectId must be a non-empty string'
-    );
-    await expect(tool('get_experience').execute({ experienceId: 'unknown' })).rejects.toThrow(
-      'Unknown experience ID: unknown'
-    );
-    await expect(tool('get_project').execute({ projectId: 'unknown' })).rejects.toThrow(
-      'Unknown project ID: unknown'
-    );
-    await expect(tool('get_evidence_by_topic').execute({ topic: 'unknown' })).rejects.toThrow(
-      'Unknown evidence topic: unknown'
-    );
+  test.each([
+    {
+      name: 'missing experience ID',
+      toolName: 'get_experience',
+      input: {},
+      error: 'experienceId must be a non-empty string',
+    },
+    {
+      name: 'empty project ID',
+      toolName: 'get_project',
+      input: { projectId: '' },
+      error: 'projectId must be a non-empty string',
+    },
+    {
+      name: 'unknown experience ID',
+      toolName: 'get_experience',
+      input: { experienceId: 'unknown' },
+      error: 'Unknown experience ID: unknown',
+    },
+    {
+      name: 'unknown project ID',
+      toolName: 'get_project',
+      input: { projectId: 'unknown' },
+      error: 'Unknown project ID: unknown',
+    },
+    {
+      name: 'unknown topic',
+      toolName: 'get_evidence_by_topic',
+      input: { topic: 'unknown' },
+      error: 'Unknown evidence topic: unknown',
+    },
+  ])('rejects $name', async ({ toolName, input, error }) => {
+    const definition = tool(toolName);
+
+    await expect(definition.execute(input)).rejects.toThrow(error);
   });
 
   test('registers every definition on the injected context', async () => {

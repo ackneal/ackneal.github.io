@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { careerExperiences, education, type Education } from '../../content/resume.js';
+import { careerExperiences, education, type Education, type ProjectExperience } from '../../content/resume.js';
 import { siteContent, type SiteContent } from '../../content/site-content.js';
 import {
   getCareerTimeline,
@@ -30,17 +30,8 @@ describe('career data progressive disclosure', () => {
     const source = careerExperiences[0];
     const result = getExperience(source.id);
 
-    expect(result.projects).toEqual(
-      source.projects.map((project) => ({
-        id: project.id,
-        name: project.name,
-        summary: project.summary,
-        evidenceAvailable: [
-          ...(project.architecture.length > 0 ? ['architecture'] : []),
-          ...(project.engineeringQuality?.length ? ['engineeringQuality'] : []),
-          ...(project.impact?.length ? ['impact'] : []),
-        ],
-      }))
+    expect(result.projects.map(({ id, name, summary }) => ({ id, name, summary }))).toEqual(
+      source.projects.map(({ id, name, summary }) => ({ id, name, summary }))
     );
     for (const project of result.projects) {
       expect(project).not.toHaveProperty('architecture');
@@ -50,55 +41,77 @@ describe('career data progressive disclosure', () => {
     }
   });
 
-  test.each([
+  const projectEvidenceCases: Array<{
+    name: string;
+    project: ProjectExperience;
+    expected: ReturnType<typeof getExperience>['projects'][number];
+  }> = [
     {
       name: 'present evidence',
-      architecture: ['Architecture evidence'],
-      engineeringQuality: ['Engineering evidence'],
-      impact: ['Impact evidence'],
-      expected: ['architecture', 'engineeringQuality', 'impact'],
+      project: {
+        id: 'fixture-project',
+        name: 'Fixture project',
+        summary: 'Fixture summary',
+        architecture: ['Architecture evidence'],
+        engineeringQuality: ['Engineering evidence'],
+        impact: ['Impact evidence'],
+        technologies: ['Fixture technology'],
+      },
+      expected: {
+        id: 'fixture-project',
+        name: 'Fixture project',
+        summary: 'Fixture summary',
+        evidenceAvailable: ['architecture', 'engineeringQuality', 'impact'],
+      },
     },
     {
       name: 'absent optional evidence',
-      architecture: ['Architecture evidence'],
-      expected: ['architecture'],
+      project: {
+        id: 'fixture-project',
+        name: 'Fixture project',
+        summary: 'Fixture summary',
+        architecture: ['Architecture evidence'],
+        technologies: ['Fixture technology'],
+      },
+      expected: {
+        id: 'fixture-project',
+        name: 'Fixture project',
+        summary: 'Fixture summary',
+        evidenceAvailable: ['architecture'],
+      },
     },
     {
       name: 'empty optional evidence',
-      architecture: ['Architecture evidence'],
-      engineeringQuality: [],
-      impact: [],
-      expected: ['architecture'],
+      project: {
+        id: 'fixture-project',
+        name: 'Fixture project',
+        summary: 'Fixture summary',
+        architecture: ['Architecture evidence'],
+        engineeringQuality: [],
+        impact: [],
+        technologies: ['Fixture technology'],
+      },
+      expected: {
+        id: 'fixture-project',
+        name: 'Fixture project',
+        summary: 'Fixture summary',
+        evidenceAvailable: ['architecture'],
+      },
     },
-  ])('marks only nonempty evidence in the lightweight project index ($name)', (item) => {
-    const sourceExperience = careerExperiences[0];
-    const sourceProject = sourceExperience.projects[0];
-    const {
-      engineeringQuality: _engineeringQuality,
-      impact: _impact,
-      ...projectWithoutOptionalEvidence
-    } = sourceProject;
-    const project = {
-      ...projectWithoutOptionalEvidence,
-      architecture: item.architecture,
-      ...(item.engineeringQuality === undefined ? {} : { engineeringQuality: item.engineeringQuality }),
-      ...(item.impact === undefined ? {} : { impact: item.impact }),
-    };
-    const result = getExperience(sourceExperience.id, [{
-      ...sourceExperience,
+  ];
+
+  test.each(projectEvidenceCases)('marks only nonempty evidence in the lightweight project index ($name)', ({ project, expected }) => {
+    const result = getExperience('fixture-experience', [{
+      id: 'fixture-experience',
+      period: 'Fixture period',
+      role: 'Fixture role',
+      company: 'Fixture company',
+      summary: 'Fixture summary',
+      technologies: [],
       projects: [project],
     }]);
 
-    expect(result.projects).toEqual([{
-      id: sourceProject.id,
-      name: sourceProject.name,
-      summary: sourceProject.summary,
-      evidenceAvailable: item.expected,
-    }]);
-    expect(result.projects[0]).not.toHaveProperty('architecture');
-    expect(result.projects[0]).not.toHaveProperty('engineeringQuality');
-    expect(result.projects[0]).not.toHaveProperty('impact');
-    expect(result.projects[0]).not.toHaveProperty('technologies');
+    expect(result.projects).toEqual([expected]);
   });
 
   test('project exposes full details and its parent experience context', () => {

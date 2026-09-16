@@ -5,7 +5,6 @@ import { LanguageModelAdapter } from './language-model-adapter.js';
 
 interface MockLanguageModelSession {
   prompt: ReturnType<typeof mock>;
-  promptStreaming: () => ReadableStream<string>;
   append: ReturnType<typeof mock>;
   clone: ReturnType<typeof mock>;
   destroy: ReturnType<typeof mock>;
@@ -16,7 +15,6 @@ interface MockLanguageModelSession {
 function nativeSession(overrides: Partial<MockLanguageModelSession> = {}): MockLanguageModelSession {
   return {
     prompt: mock(async () => 'answer'),
-    promptStreaming: () => new ReadableStream<string>(),
     append: mock(async () => {}),
     clone: mock(async () => nativeSession()),
     destroy: mock(() => {}),
