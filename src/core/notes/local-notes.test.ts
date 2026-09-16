@@ -54,6 +54,10 @@ describe('createLocalNote', () => {
   });
 
   test.each([
+    ['backend-systems', [
+      'project:distributed-read-write-lock', 'project:geospatial-proximity-search',
+      'experience:funnow-backend-lead', 'project:dual-track-inventory-engine',
+    ]],
     ['search-discovery', [
       'project:realtime-nickname-autocomplete', 'project:geospatial-proximity-search',
       'project:content-intelligence-workflow', 'project:conversational-booking-agent',

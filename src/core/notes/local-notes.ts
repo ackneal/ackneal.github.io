@@ -200,8 +200,9 @@ function retrieveFocusEvidence(resolvedFocuses: readonly Focus[]) {
 
   const byId = new Map<string, SelectedEvidence>();
   for (const topic of evidenceTopics) {
-    for (const evidence of getEvidenceByTopic(topic).evidence) {
-      byId.set(idOf(evidence), evidence);
+    const evidence = byTopic.get(topic) ?? getEvidenceByTopic(topic).evidence;
+    for (const item of evidence) {
+      byId.set(idOf(item), item);
     }
   }
 
@@ -231,7 +232,7 @@ function selectEvidence(resolvedFocuses: readonly Focus[]) {
     }
   };
 
-  // Representatives are editorial provenance, applied only to evidence in the resolved Focus topics.
+  // Curated representatives may extend beyond a focus's topic mappings.
   for (const selectedFocus of resolvedFocuses) {
     for (const reference of BROAD_FOCUS_REPRESENTATIVES[selectedFocus.id]) {
       const evidence = retrieved.byId.get(reference);
