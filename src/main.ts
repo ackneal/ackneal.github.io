@@ -6,9 +6,9 @@ import {
   createLocalNote,
   type BroadFocusId,
   type SelectedEvidence,
+  type LocalNoteResult,
 } from './core/notes/local-notes.js';
 import { setupWebMcp } from './core/web-mcp/register.js';
-
 
 function requireElement<T extends HTMLElement>(id: string): T {
   const element = document.getElementById(id);
@@ -36,7 +36,7 @@ function renderLink(link: SiteLink): HTMLAnchorElement {
 function renderExperience(experience: Experience): HTMLElement {
   const article = document.createElement('article');
   const career = experience.career;
-  const isStage = Boolean(career) && career!.stage !== career!.totalStages;
+  const isStage = career !== undefined && career.stage !== career.totalStages;
   article.className = isStage ? 'job-panel career-stage' : 'job-panel';
   if (career?.stage === 1) {
     article.classList.add('career-stage-last');
@@ -116,6 +116,22 @@ function renderEvidence(evidence: SelectedEvidence): HTMLElement {
   return item;
 }
 
+function renderLocalNote(note: LocalNoteResult): void {
+  const visibleEvidence = removeRedundantExperience(note.selectedEvidence);
+  const focusLabel = note.selectedFocus.length > 0
+    ? note.selectedFocus.map((focus) => focus.label).join(' · ')
+    : 'Matched from your request';
+
+  requireElement('notes-focus').textContent = focusLabel;
+  requireElement('notes-interpretation').textContent = normalizeGeneratedText(note.interpretation);
+  requireElement('notes-evidence').replaceChildren(...visibleEvidence.map(renderEvidence));
+  requireElement('notes-intent-document').hidden = !note.intent;
+  requireElement('notes-intent-quote').textContent = note.intent;
+  requireElement('notes-warning').hidden = false;
+  requireElement('notes-debug-output').textContent = JSON.stringify(note.debugTrace, null, 2);
+  requireElement<HTMLDetailsElement>('notes-debug').open = false;
+}
+
 function removeRedundantExperience(evidence: readonly SelectedEvidence[]): SelectedEvidence[] {
   const projectOwners = new Set(
     evidence
@@ -141,6 +157,8 @@ async function setupLocalNotes(): Promise<void> {
   const documentView = requireElement('notes-document');
   const indicator = requireElement('notes-indicator');
   const status = requireElement('notes-status');
+
+  focusOptions.replaceChildren();
   const checkboxes = BROAD_FOCUS_CHOICES.map((focus) => {
     const label = document.createElement('label');
     label.className = 'focus-option';
@@ -151,9 +169,9 @@ async function setupLocalNotes(): Promise<void> {
     const text = document.createElement('span');
     text.textContent = focus.label;
     label.append(input, text);
+    focusOptions.append(label);
     return input;
   });
-  focusOptions.replaceChildren(...checkboxes.map((input) => input.parentElement!));
   const updateFocusLimit = () => {
     const selected = checkboxes.filter((input) => input.checked).length;
     for (const checkbox of checkboxes) {
@@ -214,19 +232,8 @@ async function setupLocalNotes(): Promise<void> {
 
     try {
       const note = await createLocalNote(model, { intent: intent.value, focusIds });
-      const visibleEvidence = removeRedundantExperience(note.selectedEvidence);
-      const focusLabel = note.selectedFocus.length > 0
-        ? note.selectedFocus.map((focus) => focus.label).join(' · ')
-        : 'Matched from your request';
-      requireElement('notes-focus').textContent = focusLabel;
-      requireElement('notes-interpretation').textContent = normalizeGeneratedText(note.interpretation);
-      requireElement('notes-evidence').replaceChildren(...visibleEvidence.map(renderEvidence));
-      const intentDocument = requireElement('notes-intent-document');
-      intentDocument.hidden = !note.intent;
-      requireElement('notes-intent-quote').textContent = note.intent;
-      requireElement('notes-warning').hidden = false;
-      requireElement('notes-debug-output').textContent = JSON.stringify(note.debugTrace, null, 2);
-      requireElement<HTMLDetailsElement>('notes-debug').open = false;
+      renderLocalNote(note);
+
       editor.hidden = true;
       documentView.hidden = false;
       status.textContent = note.intentClassificationFailed
