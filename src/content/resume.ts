@@ -410,11 +410,6 @@ export const careerExperiences: CareerStage[] = [
   },
 ];
 
-/**
- * Builds the complete unified engineering dossier combining siteContent (Profile, About, Links)
- * and resume.ts (Education, Skills Matrix, and detailed Project Architectures).
- * Structured specifically for one-shot LLM reasoning with anti-hallucination factual grounding.
- */
 export function buildUnifiedDossierText(
   content: SiteContent = siteContent,
   experiences: CareerStage[] = careerExperiences,
@@ -474,10 +469,6 @@ export interface ResumeEntity {
   title: string;
 }
 
-/**
- * Returns structured resume entities (career roles, projects, skills, education)
- * for interactive mentions and autocomplete.
- */
 export function getResumeEntities(): ResumeEntity[] {
   const entities: ResumeEntity[] = [];
 
