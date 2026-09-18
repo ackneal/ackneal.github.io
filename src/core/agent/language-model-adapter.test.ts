@@ -1,6 +1,5 @@
 import { describe, expect, mock, test } from 'bun:test';
-import type { BrowserConversationMessage } from './browser-model.js';
-import type { PromptMessage } from './types.js';
+import type { BrowserConversationMessage, BrowserMessage } from './browser-model.js';
 import { LanguageModelAdapter } from './language-model-adapter.js';
 
 interface MockLanguageModelSession {
@@ -31,7 +30,7 @@ describe('LanguageModelAdapter', () => {
       native as unknown as LanguageModel
     );
     const model = new LanguageModelAdapter({ create });
-    const initialPrompts: PromptMessage[] = [{ role: 'system', content: 'instructions' }];
+    const initialPrompts: BrowserMessage[] = [{ role: 'system', content: 'instructions' }];
     const createSignal = new AbortController().signal;
     const promptSignal = new AbortController().signal;
     const responseConstraint = { type: 'object' };
