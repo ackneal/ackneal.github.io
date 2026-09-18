@@ -311,6 +311,7 @@ function projectSynthesisEvidence(selectedEvidence: readonly SelectedEvidence[])
     return {
       id: project.id, name: project.name, role: project.experience.role, company: project.experience.company,
       period: project.experience.period, summary: project.summary,
+      technologies: project.technologies,
       ...(project.architecture.length ? { architecture: project.architecture } : {}),
       ...(project.engineeringQuality?.length ? { engineeringQuality: project.engineeringQuality } : {}),
       ...(project.impact?.length ? { impact: project.impact } : {}),

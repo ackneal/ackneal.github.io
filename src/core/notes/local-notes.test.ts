@@ -139,6 +139,18 @@ describe('createLocalNote', () => {
     );
   });
 
+  test.each([
+    ['dual-track-inventory-engine', ['Go', 'MySQL', 'Redis', 'Elasticsearch', 'Serverless', 'Distributed Caching']],
+    ['ddd-architecture-adoption', ['Go', 'Domain-Driven Design (DDD)', 'Clean Architecture', 'System Modularization']],
+  ] as const)('includes canonical technologies for %s in synthesis evidence', async (projectId, technologies) => {
+    const model = new TestBrowserModel(() => 'Synthesis.');
+
+    await createLocalNote(model, { intent: '', focusIds: ['architecture'] });
+
+    const evidence = JSON.parse(model.calls[0].input.split('EVIDENCE:\n')[1].split('\nExplain')[0]);
+    expect(evidence).toContainEqual(expect.objectContaining({ id: projectId, technologies: [...technologies] }));
+  });
+
   test('rejects empty input and invalid focus count', async () => {
     const model = new TestBrowserModel(() => 'Synthesis.');
     await expect(createLocalNote(model, { intent: '', focusIds: [] })).rejects.toThrow('intent or at least one focus');
