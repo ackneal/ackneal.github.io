@@ -1,1 +1,113 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en" data-color-mode="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neal Huang — Reliability-driven, quality-oriented backend & AI engineer</title>
+  <meta name="description" content="Neal Huang is a backend engineer specializing in distributed systems, search infrastructure, and AI/LLM engineering." />
+  <link rel="canonical" href="https://ackneal.github.io/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://ackneal.github.io/" />
+  <meta property="og:title" content="Neal Huang — Reliability-driven, quality-oriented backend & AI engineer" />
+  <meta property="og:description" content="Neal Huang is a backend engineer specializing in distributed systems, search infrastructure, and AI/LLM engineering." />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:url" content="https://ackneal.github.io/" />
+  <meta name="twitter:title" content="Neal Huang — Reliability-driven, quality-oriented backend & AI engineer" />
+  <meta name="twitter:description" content="Neal Huang is a backend engineer specializing in distributed systems, search infrastructure, and AI/LLM engineering." />
+
+  <link rel="stylesheet" href="./src/styles/site.css" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2358a6ff' stroke-width='2'><path d='m8 9-3 3 3 3M16 9l3 3-3 3M14 5l-4 14'/></svg>" />
+</head>
+<body>
+  <div class="layout">
+    <header class="rail">
+      <h1 id="profile-handle" class="rail-name"></h1>
+      <p id="profile-role" class="rail-role"></p>
+
+      <nav class="rail-nav" aria-label="Sections">
+        <a href="#about"><span>01</span> About</a>
+        <a href="#experience"><span>02</span> Experience</a>
+        <a href="#explore"><span>03</span> Explore</a>
+      </nav>
+
+      <div id="profile-links" class="rail-links"></div>
+    </header>
+
+    <main class="content">
+      <div id="about" class="file-bar" aria-label="About document">
+        <span class="file-icon" aria-hidden="true">M↓</span>
+        <span>ackneal / profile / about.md</span>
+      </div>
+      <article class="readme">
+        <section class="section">
+          <p id="about-content"></p>
+        </section>
+      </article>
+
+      <div id="experience" class="file-bar" aria-label="Experience document">
+        <span class="file-icon" aria-hidden="true">M↓</span>
+        <span>ackneal / profile / experience.md</span>
+      </div>
+      <article class="readme">
+        <section class="section">
+          <h2>Experience<span class="heading-anchor">#</span></h2>
+          <div id="experience-list" class="experience-list"></div>
+        </section>
+      </article>
+
+      <div id="explore" class="file-bar" aria-label="Explore document">
+        <span class="file-icon" aria-hidden="true">U</span>
+        <span>visitor / explore.md</span>
+      </div>
+      <article class="readme">
+        <section class="section notes-section">
+          <h2>Explore<span class="heading-anchor">#</span></h2>
+          <div class="explore-capabilities">
+            <p><span id="webmcp-indicator" aria-hidden="true">●</span> WebMCP <span id="webmcp-status">Checking compatibility…</span> <a href="https://developer.chrome.com/docs/ai/webmcp" target="_blank" rel="noopener" aria-label="Learn about WebMCP">?</a></p>
+            <p><span id="notes-indicator" aria-hidden="true">●</span> On-device AI <span id="notes-status" aria-live="polite">Checking compatibility…</span> <a href="https://developer.chrome.com/docs/ai/prompt-api" target="_blank" rel="noopener" aria-label="Learn about the Prompt API">?</a></p>
+          </div>
+          <h3 class="explore-capability-title">Ask about my work</h3>
+          <p>Ask one question and get a private, on-device answer grounded in canonical career evidence.</p>
+          <form id="notes-editor" class="notes-editor">
+            <label for="notes-intent">What would you like to know?</label>
+            <textarea id="notes-intent" rows="3" placeholder="e.g. hands-on architecture experience while leading engineering teams" disabled></textarea>
+            <fieldset>
+              <legend>Optional focus <span>choose up to 2</span></legend>
+              <div id="notes-focus-options" class="focus-options"></div>
+            </fieldset>
+            <button id="notes-generate" class="notes-primary-action" type="submit" disabled>Generate answer</button>
+          </form>
+          <div id="notes-document" class="notes-document" hidden>
+            <div class="notes-document-actions">
+              <span>LOCAL</span>
+              <button id="notes-edit" type="button">Change question</button>
+              <button id="notes-clear" type="button">Clear</button>
+            </div>
+            <p class="notes-kicker">Focused on</p>
+            <p id="notes-focus"></p>
+            <div id="notes-intent-document" hidden>
+              <p class="notes-kicker">You asked</p>
+              <blockquote id="notes-intent-quote"></blockquote>
+            </div>
+            <h3>Answer</h3>
+            <p id="notes-interpretation"></p>
+            <h3>Evidence</h3>
+            <div id="notes-evidence" class="notes-evidence"></div>
+            <p id="notes-warning" class="experimental-note" hidden>Experimental On-device AI interpretation. Refer to the portfolio for canonical information.</p>
+            <details id="notes-debug" class="notes-debug">
+              <summary>Debug generation trace</summary>
+              <pre id="notes-debug-output"></pre>
+            </details>
+          </div>
+        </section>
+      </article>
+
+      <footer class="site-footer"><p id="footer-content"></p></footer>
+    </main>
+  </div>
+
+  <script type="module" src="./src/main.ts"></script>
+</body>
+</html>
