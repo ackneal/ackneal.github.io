@@ -11,8 +11,8 @@ bun run dev
 
 ## Deployment
 
-Push to `release` to run tests, type checking, and the production build, then deploy `dist/` to GitHub Pages.
+Push to `main` to run tests, type checking, and the production build, then deploy `dist/` to GitHub Pages.
 
-In GitHub **Settings → Pages → Build and deployment**, set **Source** to **GitHub Actions**. If the `github-pages` environment restricts deployment branches, allow `release`.
+In GitHub **Settings → Pages → Build and deployment**, set **Source** to **GitHub Actions**. If the `github-pages` environment restricts deployment branches, allow `main`.
 
 Keep `resume.pdf` in the repository root; the build copies it into `dist/`.
